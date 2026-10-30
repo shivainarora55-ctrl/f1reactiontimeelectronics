@@ -1,0 +1,190 @@
+:root {
+  --bg: #090a0f;
+  --card-bg: #12151e;
+  --text: #f0f2f5;
+  --red: #ff1e38;
+  --green: #00e676;
+  --blue: #2979ff;
+  --off: #1b1f2a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 25px 20px;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  background: radial-gradient(circle at top, #141a29 0%, var(--bg) 100%);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  font-size: 2rem;
+  letter-spacing: 2px;
+  margin: 0 0 15px 0;
+}
+
+.top-controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+}
+
+button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-connect { background: #ff9800; color: #111; }
+.btn-start { background: var(--green); color: #000; }
+.btn-reset { background: var(--red); color: #fff; }
+
+.round-badge {
+  display: inline-block;
+  background: #1f2638;
+  border: 1px solid #333d54;
+  color: #ffeb3b;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 6px 18px;
+  border-radius: 20px;
+  margin: 5px 0;
+}
+
+.connection-indicator {
+  font-size: 0.85rem;
+  color: #788296;
+  margin-bottom: 20px;
+}
+
+.gantry-container {
+  display: flex;
+  justify-content: center;
+  gap: 35px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.board-card {
+  background: var(--card-bg);
+  padding: 25px;
+  border-radius: 16px;
+  width: 320px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  border: 1px solid #1f2638;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.board-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #90caf9;
+}
+
+.lights-housing {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  background: #000;
+  padding: 14px 20px;
+  border-radius: 40px;
+  margin-bottom: 15px;
+  border: 2px solid #232838;
+}
+
+.lamp {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--off);
+  transition: background 0.08s ease, box-shadow 0.08s ease;
+}
+
+.lamp.red-on { background: var(--red); box-shadow: 0 0 22px var(--red); }
+.lamp.green-on { background: var(--green); box-shadow: 0 0 28px var(--green); }
+.lamp.blue-on { background: var(--blue); box-shadow: 0 0 22px var(--blue); }
+
+.score-box {
+  font-size: 2rem;
+  font-weight: 800;
+  min-height: 42px;
+}
+
+.status-text {
+  margin-top: 4px;
+  font-size: 0.9rem;
+  color: #7b889b;
+}
+
+.rounds-history {
+  width: 100%;
+  background: #0b0d13;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-top: 18px;
+  border: 1px solid #1c2232;
+  font-size: 0.95rem;
+}
+
+.history-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  color: #a0aec0;
+}
+
+.history-row b {
+  color: #fff;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #222a3d;
+  margin: 6px 0;
+}
+
+.total-score span {
+  font-weight: bold;
+  color: #ffeb3b;
+}
+
+.total-score b {
+  color: #ffeb3b;
+  font-size: 1.1rem;
+}
+
+.winner-banner {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #ffd600;
+  min-height: 45px;
+  text-shadow: 0 0 20px rgba(255, 214, 0, 0.4);
+}

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏎️ F1 Reaction Test — 3 Round Tournament</title>
+  <style>
+    :root {
+      --bg: #090a0f;
+      --card-bg: #12151e;
+      --text: #f0f2f5;
+      --red: #ff1e38;
+      --green: #00e676;
+      --blue: #2979ff;
+      --off: #1b1f2a;
+    }
+    * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 25px 20px;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+
+    background:
+        linear-gradient(rgba(10, 12, 20, 0.45), rgba(10, 12, 20, 0.45)),
+        url("https://wallpapercave.com/wp/wp10008518.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+    h1 { font-size: 2rem; letter-spacing: 2px; margin: 0 0 15px 0; }
+    .top-controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: transform 0.15s ease;
+    }
+    button:hover:not(:disabled) { transform: translateY(-2px); }
+    button:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+    .btn-connect { background: #ff9800; color: #111; }
+    .btn-start { background: var(--green); color: #000; }
+    .btn-reset { background: var(--red); color: #fff; }
+
+    .round-badge {
+      display: inline-block;
+      background: #1f2638;
+      border: 1px solid #333d54;
+      color: #ffeb3b;
+      font-weight: bold;
+      font-size: 1rem;
+      padding: 6px 18px;
+      border-radius: 20px;
+      margin: 5px 0;
+    }
+    .connection-indicator {
+      font-size: 0.85rem;
+      color: #788296;
+      margin-bottom: 20px;
+    }
+    .gantry-container {
+      display: flex;
+      justify-content: center;
+      gap: 35px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .board-card {
+      background: var(--card-bg);
+      padding: 25px;
+      border-radius: 16px;
+      width: 320px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      border: 1px solid #1f2638;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .board-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #90caf9;
+    }
+    .lights-housing {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      background: #000;
+      padding: 14px 20px;
+      border-radius: 40px;
+      margin-bottom: 15px;
+      border: 2px solid #232838;
+    }
+    .lamp {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--off);
+      transition: background 0.08s ease, box-shadow 0.08s ease;
+    }
+    .lamp.red-on { background: var(--red); box-shadow: 0 0 22px var(--red); }
+    .lamp.green-on { background: var(--green); box-shadow: 0 0 28px var(--green); }
+    .lamp.blue-on { background: var(--blue); box-shadow: 0 0 22px var(--blue); }
+
+    .score-box {
+      font-size: 2rem;
+      font-weight: 800;
+      min-height: 42px;
+    }
+    .status-text {
+      margin-top: 4px;
+      font-size: 0.9rem;
+      color: #7b889b;
+    }
+    .rounds-history {
+      width: 100%;
+      background: #0b0d13;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-top: 18px;
+      border: 1px solid #1c2232;
+      font-size: 0.95rem;
+    }
+    .history-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      color: #a0aec0;
+    }
+    .history-row b { color: #fff; }
+    hr {
+      border: 0;
+      border-top: 1px solid #222a3d;
+      margin: 6px 0;
+    }
+    .total-score span { font-weight: bold; color: #ffeb3b; }
+    .total-score b { color: #ffeb3b; font-size: 1.1rem; }
+
+    .winner-banner {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: #ffd600;
+      min-height: 45px;
+      text-shadow: 0 0 20px rgba(255, 214, 0, 0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🏎️ F1 REACTION TEST CHAMPIONSHIP</h1>
+
+  <div class="top-controls">
+    <button id="btnConnect" class="btn-connect" onclick="connectSerial()">🔌 Connect Arduino</button>
+    <button id="btnStart" class="btn-start" onclick="handleStartClick()" disabled>▶️ START ROUND 1</button>
+    <button id="btnReset" class="btn-reset" onclick="resetTournament()" disabled>🔄 RESET MATCH</button>
+  </div>
+
+  <div id="roundIndicator" class="round-badge">ROUND 1 OF 3</div>
+  <div id="connStatus" class="connection-indicator">Not Connected</div>
+
+  <div class="gantry-container">
+    <!-- PLAYER 1 -->
+    <div class="board-card">
+      <div class="board-title">PLAYER 1</div>
+      <div class="lights-housing">
+        <div id="p1_l1" class="lamp"></div>
+        <div id="p1_l2" class="lamp"></div>
+        <div id="p1_l3" class="lamp"></div>
+      </div>
+      <div id="p1_time" class="score-box">-- ms</div>
+      <div id="p1_status" class="status-text">Standby</div>
+      
+      <div class="rounds-history">
+        <div class="history-row"><span>R1:</span> <b id="p1_r1">--</b></div>
+        <div class="history-row"><span>R2:</span> <b id="p1_r2">--</b></div>
+        <div class="history-row"><span>R3:</span> <b id="p1_r3">--</b></div>
+        <hr>
+        <div class="history-row total-score"><span>Wins:</span> <b id="p1_wins">0</b></div>
+      </div>
+    </div>
+
+    <!-- PLAYER 2 -->
+    <div class="board-card">
+      <div class="board-title">PLAYER 2</div>
+      <div class="lights-housing">
+        <div id="p2_l1" class="lamp"></div>
+        <div id="p2_l2" class="lamp"></div>
+        <div id="p2_l3" class="lamp"></div>
+      </div>
+      <div id="p2_time" class="score-box">-- ms</div>
+      <div id="p2_status" class="status-text">Standby</div>
+
+      <div class="rounds-history">
+        <div class="history-row"><span>R1:</span> <b id="p2_r1">--</b></div>
+        <div class="history-row"><span>R2:</span> <b id="p2_r2">--</b></div>
+        <div class="history-row"><span>R3:</span> <b id="p2_r3">--</b></div>
+        <hr>
+        <div class="history-row total-score"><span>Wins:</span> <b id="p2_wins">0</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="winnerBanner" class="winner-banner"></div>
+
+  <script>
+    let port = null;
+    let writer = null;
+    let reader = null;
+
+    let currentRound = 1;
+    const TOTAL_ROUNDS = 3;
+    let p1Scores = [null, null, null];
+    let p2Scores = [null, null, null];
+    let p1Wins = 0;
+    let p2Wins = 0;
+
+    let currentP1Time = null;
+    let currentP2Time = null;
+    let roundInProgress = false;
+
+    async function connectSerial() {
+      if (!navigator.serial) {
+        alert("Web Serial API is not supported. Make sure you are using Google Chrome or Microsoft Edge.");
+        return;
+      }
+
+      try {
+        port = await navigator.serial.requestPort();
+        await port.open({ baudRate: 9600 });
+
+        writer = port.writable.getWriter();
+
+        document.getElementById('btnConnect').innerText = "✅ Connected";
+        document.getElementById('btnConnect').disabled = true;
+        document.getElementById('btnStart').disabled = false;
+        document.getElementById('btnReset').disabled = false;
+        document.getElementById('connStatus').innerText = "Connected to Arduino (COM5 @ 9600 baud)";
+        document.getElementById('connStatus').style.color = "#00e676";
+
+        readSerial();
+      } catch (err) {
+        alert("Error connecting: " + err.message);
+      }
+    }
+
+    async function sendCommand(cmd) {
+      if (!writer) return;
+      const encoder = new TextEncoder();
+      await writer.write(encoder.encode(cmd + "\n"));
+    }
+
+    async function readSerial() {
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (port && port.readable) {
+        reader = port.readable.getReader();
+        try {
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            let lines = buffer.split("\n");
+            buffer = lines.pop();
+
+            for (let line of lines) {
+              handleIncomingMessage(line.trim());
+            }
+          }
+        } catch (err) {
+          console.error(err);
+        } finally {
+          reader.releaseLock();
+        }
+      }
+    }
+
+    function setAllLamps(colorClass) {
+      const lamps = ['p1_l1', 'p1_l2', 'p1_l3', 'p2_l1', 'p2_l2', 'p2_l3'];
+      lamps.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.className = 'lamp ' + colorClass;
+      });
+    }
+
+    function handleStartClick() {
+      if (currentRound > TOTAL_ROUNDS) {
+        resetTournament();
+        return;
+      }
+      roundInProgress = true;
+      document.getElementById('btnStart').disabled = true;
+      sendCommand('S');
+    }
+
+    function resetTournament() {
+      currentRound = 1;
+      p1Scores = [null, null, null];
+      p2Scores = [null, null, null];
+      p1Wins = 0;
+      p2Wins = 0;
+      currentP1Time = null;
+      currentP2Time = null;
+      roundInProgress = false;
+
+      for (let i = 1; i <= 3; i++) {
+        document.getElementById(`p1_r${i}`).innerText = "--";
+        document.getElementById(`p2_r${i}`).innerText = "--";
+      }
+      document.getElementById('p1_wins').innerText = "0";
+      document.getElementById('p2_wins').innerText = "0";
+      document.getElementById('p1_time').innerText = "-- ms";
+      document.getElementById('p2_time').innerText = "-- ms";
+      document.getElementById('winnerBanner').innerText = "";
+      document.getElementById('roundIndicator').innerText = "ROUND 1 OF 3";
+      document.getElementById('btnStart').innerText = "▶️ START ROUND 1";
+      document.getElementById('btnStart').disabled = false;
+
+      sendCommand('R');
+    }
+
+    function handleIncomingMessage(msg) {
+      if (msg.includes("STATUS:IDLE") || msg.includes("LIGHTS:BLUE")) {
+        setAllLamps('blue-on');
+        if (!roundInProgress) {
+          document.getElementById('p1_status').innerText = "Ready";
+          document.getElementById('p2_status').innerText = "Ready";
+        }
+      } 
+      else if (msg.includes("STATUS:STARTING")) {
+        setAllLamps('');
+        currentP1Time = null; 
+        currentP2Time = null;
+        document.getElementById('p1_time').innerText = "-- ms";
+        document.getElementById('p2_time').innerText = "-- ms";
+        document.getElementById('p1_status').innerText = "Watch lights...";
+        document.getElementById('p2_status').innerText = "Watch lights...";
+      }
+      else if (msg.includes("LIGHTS:RED1")) {
+        document.getElementById('p1_l1').className = 'lamp red-on';
+        document.getElementById('p2_l1').className = 'lamp red-on';
+      }
+      else if (msg.includes("LIGHTS:RED2")) {
+        document.getElementById('p1_l2').className = 'lamp red-on';
+        document.getElementById('p2_l2').className = 'lamp red-on';
+      }
+      else if (msg.includes("LIGHTS:RED3")) {
+        document.getElementById('p1_l3').className = 'lamp red-on';
+        document.getElementById('p2_l3').className = 'lamp red-on';
+      }
+      else if (msg.includes("LIGHTS:GREEN")) {
+        setAllLamps('green-on');
+        document.getElementById('p1_status').innerText = "🟢 REACT NOW!";
+        document.getElementById('p2_status').innerText = "🟢 REACT NOW!";
+      }
+      else if (msg.includes("EVENT:P1_JUMP")) {
+        currentP1Time = -1;
+        document.getElementById('p1_time').innerText = "FALSE START";
+        document.getElementById('p1_status').innerText = "❌ Disqualified";
+      }
+      else if (msg.includes("EVENT:P2_JUMP")) {
+        currentP2Time = -1;
+        document.getElementById('p2_time').innerText = "FALSE START";
+        document.getElementById('p2_status').innerText = "❌ Disqualified";
+      }
+      else if (msg.includes("RESULT:P1:")) {
+        currentP1Time = parseInt(msg.split("RESULT:P1:")[1]);
+        document.getElementById('p1_time').innerText = currentP1Time + " ms";
+        document.getElementById('p1_status').innerText = "Finished";
+        evaluateRoundOutcome();
+      }
+      else if (msg.includes("RESULT:P2:")) {
+        currentP2Time = parseInt(msg.split("RESULT:P2:")[1]);
+        document.getElementById('p2_time').innerText = currentP2Time + " ms";
+        document.getElementById('p2_status').innerText = "Finished";
+        evaluateRoundOutcome();
+      }
+    }
+
+    function evaluateRoundOutcome() {
+      if (currentP1Time !== null && currentP2Time !== null && roundInProgress) {
+        roundInProgress = false;
+
+        p1Scores[currentRound - 1] = currentP1Time;
+        p2Scores[currentRound - 1] = currentP2Time;
+
+        document.getElementById(`p1_r${currentRound}`).innerText = currentP1Time < 0 ? "FAULT" : `${currentP1Time} ms`;
+        document.getElementById(`p2_r${currentRound}`).innerText = currentP2Time < 0 ? "FAULT" : `${currentP2Time} ms`;
+
+        if (currentP1Time > 0 && (currentP2Time < 0 || currentP1Time < currentP2Time)) {
+          p1Wins++;
+        } else if (currentP2Time > 0 && (currentP1Time < 0 || currentP2Time < currentP1Time)) {
+          p2Wins++;
+        }
+
+        document.getElementById('p1_wins').innerText = p1Wins;
+        document.getElementById('p2_wins').innerText = p2Wins;
+
+        if (currentRound < TOTAL_ROUNDS) {
+          currentRound++;
+          document.getElementById('roundIndicator').innerText = `ROUND ${currentRound} OF 3`;
+          document.getElementById('btnStart').innerText = `▶️ START ROUND ${currentRound}`;
+          document.getElementById('btnStart').disabled = false;
+        } else {
+          declareFinalChampion();
+        }
+      }
+    }
+
+    function declareFinalChampion() {
+      const banner = document.getElementById('winnerBanner');
+      document.getElementById('roundIndicator').innerText = "🏆 MATCH FINISHED";
+      document.getElementById('btnStart').innerText = "🔄 PLAY NEW MATCH";
+      document.getElementById('btnStart').disabled = false;
+
+      if (p1Wins > p2Wins) {
+        banner.innerText = `👑 PLAYER 1 WINS THE MATCH (${p1Wins} - ${p2Wins})!`;
+      } else if (p2Wins > p1Wins) {
+        banner.innerText = `👑 PLAYER 2 WINS THE MATCH (${p2Wins} - ${p1Wins})!`;
+      } else {
+        let p1Valid = p1Scores.filter(s => s > 0);
+        let p2Valid = p2Scores.filter(s => s > 0);
+        let p1Avg = p1Valid.length ? p1Valid.reduce((a, b) => a + b) / p1Valid.length : 9999;
+        let p2Avg = p2Valid.length ? p2Valid.reduce((a, b) => a + b) / p2Valid.length : 9999;
+
+        if (p1Avg < p2Avg) {
+          banner.innerText = `👑 PLAYER 1 WINS ON TIME TIEBREAKER!`;
+        } else if (p2Avg < p1Avg) {
+          banner.innerText = `👑 PLAYER 2 WINS ON TIME TIEBREAKER!`;
+        } else {
+          banner.innerText = "🤝 IT'S AN OVERALL MATCH TIE!";
+        }
+      }
+    }
+  </script>
+</body>
+</html>
